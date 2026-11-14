@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { toast } from "react-toastify";
 import api, { errorMessage } from "../services/api";
+
 const TYPES = [
   ["OTHER", "Other"],
   ["REPAIR_INVOICE", "Repair invoice"],
@@ -10,6 +11,7 @@ const TYPES = [
   ["DRIVING_LICENCE", "Driving licence"],
   ["MEDICAL_REPORT", "Medical report"],
 ];
+
 const EMPTY_INVOICE = {
   invoiceNumber: "",
   repairerName: "",
@@ -18,6 +20,7 @@ const EMPTY_INVOICE = {
   invoiceDate: "",
   invoiceAmount: "",
 };
+
 export default function EvidenceUploadForm({
   endpoint,
   onUploaded,
@@ -28,57 +31,77 @@ export default function EvidenceUploadForm({
   const [description, setDescription] = useState("");
   const [invoice, setInvoice] = useState(EMPTY_INVOICE);
   const [busy, setBusy] = useState(false);
+
   const isRepairInvoice = evidenceType === "REPAIR_INVOICE";
+
   const changeInvoice = (e) => {
     const { name, value } = e.target;
+
     setInvoice((previous) => ({
       ...previous,
       [name]: value,
     }));
   };
+
   const submit = async (e) => {
     e.preventDefault();
+
     if (!isRepairInvoice && !file) {
-      return toast.error("Choose an evidence file first.");
+      toast.error("Choose an evidence file first.");
+      return;
     }
+
     if (file && file.size > 10 * 1024 * 1024) {
-      return toast.error("Maximum file size is 10 MB.");
+      toast.error("Maximum file size is 10 MB.");
+      return;
     }
+
     const body = new FormData();
+
     if (file) {
       body.append("file", file);
     }
+
     body.append("evidenceType", evidenceType);
+
     if (description.trim()) {
       body.append("description", description.trim());
     }
+
     if (isRepairInvoice) {
       body.append("invoiceNumber", invoice.invoiceNumber.trim());
       body.append("repairerName", invoice.repairerName.trim());
+
       if (invoice.repairerGstin.trim()) {
         body.append("repairerGstin", invoice.repairerGstin.trim());
       }
+
       if (invoice.repairerPhone.trim()) {
         body.append("repairerPhone", invoice.repairerPhone.trim());
       }
+
       body.append("invoiceDate", invoice.invoiceDate);
       body.append("invoiceAmount", invoice.invoiceAmount);
     }
+
     setBusy(true);
+
     try {
       await api.post(endpoint, body);
+
       toast.success(
         isRepairInvoice && !file
           ? "Repair invoice details saved successfully."
-          : "Evidence uploaded successfully.",
+          : "Evidence uploaded successfully."
       );
+
       setFile(null);
       setDescription("");
       setEvidenceType("OTHER");
-      setInvoice({
-        ...EMPTY_INVOICE,
-      });
+      setInvoice({ ...EMPTY_INVOICE });
+
       e.target.reset();
+
       onUploaded?.();
     } catch (error) {
       toast.error(errorMessage(error));
@@ -86,24 +109,25 @@ export default function EvidenceUploadForm({
       setBusy(false);
     }
   };
+
   return (
     <form
       onSubmit={submit}
       className={
-        compact ? "evidence-form compact-evidence-form" : "evidence-form"
+        compact
+          ? "evidence-form compact-evidence-form"
+          : "evidence-form"
       }
     >
       <div className="row g-2 align-items-end">
+
         <div className="col-md-4">
           <label>Evidence type</label>
 
           <select
             className="form-select form-select-sm"
             value={evidenceType}
-            onChange={(e) => {
-              setEvidenceType(e.target.value);
-              setFile(null);
-            }}
+            onChange={(e) => setEvidenceType(e.target.value)}
           >
             {TYPES.map(([value, label]) => (
               <option key={value} value={value}>
@@ -126,7 +150,9 @@ export default function EvidenceUploadForm({
             type="file"
             accept=".pdf,.jpg,.jpeg,.png,.webp,application/pdf,image/jpeg,image/png,image/webp"
             required={!isRepairInvoice}
-            onChange={(e) => setFile(e.target.files?.[0] || null)}
+            onChange={(e) => {
+              setFile(e.target.files?.[0] || null);
+            }}
           />
 
           <small className="text-muted">
@@ -159,16 +185,18 @@ export default function EvidenceUploadForm({
 
       {isRepairInvoice && (
         <div className="invoice-fields mt-3">
+
           <div className="small fw-bold mb-2">
             Repair invoice details (required)
           </div>
 
           <div className="alert alert-info py-2 small">
-            You can save repair invoice details without attaching an invoice
-            photo or PDF. Attach a file if one is available.
+            You can save repair invoice details without attaching
+            an invoice photo or PDF. Attach a file if one is available.
           </div>
 
           <div className="row g-2">
+
             <div className="col-md-4">
               <label>Invoice number *</label>
 
@@ -248,6 +276,7 @@ export default function EvidenceUploadForm({
                 required
               />
             </div>
+
           </div>
         </div>
       )}
