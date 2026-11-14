@@ -35,7 +35,7 @@ jobs:
       DB_URL: jdbc:postgresql://localhost:5432/insurance_fraud_db
       DB_USERNAME: claimsure
       DB_PASSWORD: claimsure-ci-password
-      JWT_SECRET: claimsure-ci-test-secret-key-for-hmac-signing-only
+      JWT_SECRET: Q2xhaW1TdXJlLUNJLW9ubHktc2VjcmV0LWtleS0zMi1ieXRlcyE=
       JWT_EXPIRATION_MS: 3600000
       S3_ENABLED: false
 
