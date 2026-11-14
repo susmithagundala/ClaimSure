@@ -46,7 +46,7 @@ public class EvidenceService {
     private final EntityMatchingService entityMatchingService;
     private final FraudDetectionService fraudDetectionService;
 
-    @Value("${app.aws.s3.bucket}")
+    @Value("${app.aws.s3.bucket:}")
     private String bucket;
 
     public EvidenceService(
