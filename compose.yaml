@@ -37,9 +37,6 @@ services:
       S3_ENABLED: "true"
       AWS_REGION: ${AWS_REGION:-ap-south-1}
       AWS_S3_BUCKET: ${AWS_S3_BUCKET:?Set AWS_S3_BUCKET in the root .env file}
-      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:?Set AWS_ACCESS_KEY_ID in the root .env file}
-      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:?Set AWS_SECRET_ACCESS_KEY in the root .env file}
-      AWS_SESSION_TOKEN: ${AWS_SESSION_TOKEN:-}
 
     depends_on:
       postgres:
@@ -57,7 +54,7 @@ services:
       - "3000:80"
     depends_on:
       - backend
-  
+
   # Python ETL - optional, one-shot execution
   etl:
     build:
@@ -91,7 +88,6 @@ services:
         condition: service_healthy
 
     restart: "no"
-
 
 volumes:
   claimsure_postgres_data:
